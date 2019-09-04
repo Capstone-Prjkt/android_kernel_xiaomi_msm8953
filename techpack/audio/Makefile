@@ -40,6 +40,9 @@ obj-y += asoc/
 obj-y += dsp/
 obj-y += ipc/
 obj-y += soc/
+
 else
 obj-y += titanium/
 endif
+
+subdir-ccflags-y := -Os -g0
