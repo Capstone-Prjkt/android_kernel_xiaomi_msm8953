@@ -5109,7 +5109,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	int task_sleep = flags & DEQUEUE_SLEEP;
 
 	if (task_sleep && rq->nr_running == 1)
-		flags |= DEQUEUE_IDLE;
+		flags |= DEQUEUE_SLEEP;
 
 	for_each_sched_entity(se) {
 		cfs_rq = cfs_rq_of(se);
