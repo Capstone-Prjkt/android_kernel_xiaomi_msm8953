@@ -323,26 +323,28 @@ static int cpu_boost_init(void)
 {
 	int cpu, ret;
 	struct cpu_sync *s;
-	// alex.naidis@paranoidandroid.co Rework scheduling setup - start
-	struct sched_param param = { .sched_priority = 2 };
-	cpumask_t sys_bg_mask;
 
-
+	// Create workqueue with high priority
 	cpu_boost_wq = alloc_workqueue("cpuboost_wq", WQ_HIGHPRI, 0);
 	if (!cpu_boost_wq)
-		return -EFAULT;
-	}
+		return -EFAULT; // If creation fails, return error
 
+	// Initialize work structures
 	INIT_WORK(&input_boost_work, do_input_boost);
 	INIT_DELAYED_WORK(&input_boost_rem, do_input_boost_rem);
 
+	// Initialize per-CPU data
 	for_each_possible_cpu(cpu) {
 		s = &per_cpu(sync_info, cpu);
 		s->cpu = cpu;
 	}
+
+	// Register CPU frequency policy notifier
 	cpufreq_register_notifier(&boost_adjust_nb, CPUFREQ_POLICY_NOTIFIER);
 
+	// Register input handler for boost events
 	ret = input_register_handler(&cpuboost_input_handler);
-	return 0;
+	return ret; // Return the result of the input handler registration
 }
+
 late_initcall(cpu_boost_init);
